@@ -1,144 +1,279 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" data-bs-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>REPORT GAMAS - TIF2 REGIONAL3</title>
+  <title>Monitoring Tiket GAMAS - TIF2 REGIONAL3</title>
 
-  <!-- Bootstrap 5 CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <!-- DataTables CSS -->
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css"/>
-  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css"/>
-  <!-- Leaflet CSS -->
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- DataTables Bootstrap -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.bootstrap5.min.css">
+  <!-- Leaflet -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
   <style>
     body {
-      background-color: #f8f9fa;
+      transition: background-color 0.3s, color 0.3s;
     }
-    .container {
-      margin-top: 20px;
+
+    /* Dark mode container */
+    [data-bs-theme="dark"] .table-container {
+      background-color: #1e1e2f;
+      box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
     }
-    .table-responsive {
-      border-radius: 10px;
-      overflow: hidden;
-      background: white;
-      padding: 10px;
+
+    /* Dark mode header */
+    [data-bs-theme="dark"] #dataTable thead {
+      background: linear-gradient(to right, #343a40, #495057);
+      color: #fff;
     }
-    table {
-      font-size: 14px;
-      table-layout: fixed;
-      width: 100%;
+
+    /* Dark mode cell */
+    [data-bs-theme="dark"] #dataTable tbody td {
+      color: #f1f1f1;
+      border-color: #333;
     }
-    th, td {
-      word-wrap: break-word;
-      white-space: normal;
-      padding: 8px;
-      text-align: center;
+
+    /* Hover row dark mode */
+    [data-bs-theme="dark"] #dataTable tbody tr:hover {
+      background-color: #2a2d3e;
     }
-    th {
+
+    /* Search bar in dark mode */
+    [data-bs-theme="dark"] .dataTables_wrapper .dataTables_filter input {
+      background-color: #2c2f3a;
+      border-color: #555;
+      color: #fff;
+    }
+
+    /* Pagination buttons in dark mode */
+    [data-bs-theme="dark"] .dataTables_wrapper .dataTables_paginate .paginate_button {
+      background-color: #333 !important;
+      color: #ddd !important;
+    }
+
+    [data-bs-theme="dark"] .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+      background-color: #6610f2 !important;
+      color: white !important;
+    }
+
+    /* DataTables export buttons in dark mode */
+    [data-bs-theme="dark"] .dt-buttons .btn {
       background-color: #343a40;
-      color: white;
-    }
-    th:nth-child(1), td:nth-child(1) { width: 5%; }
-    th:nth-child(2), td:nth-child(2) { width: 10%; }
-    th:nth-child(3), td:nth-child(3) { width: 10%; }
-    th:nth-child(4), td:nth-child(4) { width: 12%; }
-    th:nth-child(5), td:nth-child(5) { width: 20%; }
-    th:nth-child(6), td:nth-child(6) { width: 10%; }
-    th:nth-child(7), td:nth-child(7) { width: 10%; }
-    th:nth-child(8), td:nth-child(8) { width: 10%; }
-    th:nth-child(9), td:nth-child(9) { width: 10%; }
-    th:nth-child(10), td:nth-child(10) { width: 10%; }
-    th:nth-child(11), td:nth-child(11) { width: 10%; }
-    th:nth-child(12), td:nth-child(12) { width: 10%; }
-    th:nth-child(13), td:nth-child(13) { width: 10%; }
-
-    .highlight-yellow {
-      background-color: yellow !important;
+      color: #ddd;
+      border: 1px solid #444;
     }
 
+    [data-bs-theme="dark"] .dt-buttons .btn:hover {
+      background-color: #495057;
+    }
+
+    /* Highlight-yellow adjustment in dark mode */
+    [data-bs-theme="dark"] .highlight-yellow {
+      background-color: #ffe57f !important;
+      color: #222;
+      font-weight: 500;
+    }
+
+    /* Peta */
     #map {
-      height: 400px;
-      margin-bottom: 20px;
+      height: 200px;
       border-radius: 10px;
+      margin-bottom: 1.5rem;
     }
 
     .blinking-marker {
       background-color: yellow;
-      border-radius: 100%;
-      width:50px;
-      height: 50px;
+      border-radius: 70%;
+      width: 20px;
+      height: 20px;
       animation: blink 1s infinite;
       border: 2px solid black;
     }
 
     @keyframes blink {
-      0% { opacity: 1; }
+      0%, 100% { opacity: 1; }
       50% { opacity: 0.2; }
-      100% { opacity: 1; }
     }
 
-    #liveStatus { 
-        font-size: 14px; 
-        font-weight: bold; 
-        margin-top: 5px; 
-        color: green; 
+    /* Card dan Tabel */
+    .table-responsive {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      background: #fff;
     }
 
-    body.dark-mode {
-        background-color: #121212;
-        color: #e0e0e0;
-      }
-      
-      .dark-mode .table-responsive {
-        background-color: #1e1e1e;
-      }
-      
-      .dark-mode th {
-        background-color: #222;
-        color: #fff;
-      }
-      
-      .dark-mode td {
-        background-color: #2a2a2a;
-        color: #e0e0e0;
-      }
-      
-      .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button {
-        color: #fff !important;
-      }
-      
-      .dark-mode .form-check-label {
-        color: #e0e0e0;
-      }
-      
-      .dark-mode #liveStatus {
-        color: #90ee90;
-      }      
+    #dataTable {
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 0.95rem;
+    }
 
+    #dataTable thead {
+      background: linear-gradient(to right, #4e73df, #1cc88a);
+      color: #fff;
+      border-bottom: none;
+    }
+
+    #dataTable thead th {
+      padding: 14px 10px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      border: none;
+    }
+
+    #dataTable tbody td {
+      padding: 12px 10px;
+      vertical-align: middle;
+      border-bottom: 1px solid #e0e6ed;
+    }
+
+    #dataTable tbody tr {
+      transition: background-color 0.2s ease;
+    }
+
+    #dataTable tbody tr:hover {
+      background-color: #f8f9fc;
+      transition: background-color 0.2s;
+    }
+
+    #dataTable td:first-child,
+    #dataTable th:first-child {
+      border-top-left-radius: 10px;
+    }
+    
+    #dataTable td:last-child,
+    #dataTable th:last-child {
+      border-top-right-radius: 10px;
+    }
+
+    /* Highlight untuk Sisa TTR < 0 */
+    .highlight-yellow {
+      background-color: #ffe57f !important;
+      color: #222;
+      font-weight: 500;
+      border-radius: 6px;
+    }
+
+    /* Pagination */
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+      padding: 6px 12px;
+      margin: 0 2px;
+      border-radius: 6px;
+      border: none !important;
+      background-color: #f0f0f0 !important;
+      color: #333 !important;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+      background-color: #4e73df !important;
+      color: white !important;
+    }
+
+    /* Search dan length */
+    .dataTables_wrapper .dataTables_filter input {
+      border-radius: 8px;
+      padding: 6px 12px;
+      border: 1px solid #ccc;
+      margin-left: 10px;
+      background-color: #fff;
+    }
+
+    .dataTables_wrapper .dataTables_filter input:focus {
+      border-color: #0d6efd;
+      box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+
+    .dataTables_wrapper .dataTables_length select {
+      border-radius: 6px;
+      padding: 4px 8px;
+    }
+
+    /* Tombol Export */
+    .dt-buttons {
+      margin-bottom: 1rem;
+    }
+
+    .dt-buttons .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      font-size: 0.85rem;
+      border-radius: 6px;
+    }
+
+    .dt-buttons .btn:hover {
+      background: linear-gradient(45deg, #2e59d9, #17a673);
+      color: white;
+    }
+
+    .dt-buttons .btn i {
+      font-size: 1rem;
+    }
+
+    /* Mode Gelap */
+    .modal-content.dark-mode {
+      background-color: #1e1e2f;
+      color: white;
+    }
+
+    .modal-content.light-mode {
+      background-color: white;
+      color: black;
+    }
+
+    body.bg-dark .dt-buttons .btn {
+      background-color: #343a40;
+    }
+
+    body.bg-dark .dt-buttons .btn:hover {
+      background-color: #495057;
+    }
+
+    .form-switch {
+      float: right;
+    }
+
+    .card-header {
+      background: linear-gradient(45deg, #0d6efd, #6610f2);
+    }
+
+    .card-header h5 {
+      font-weight: 500;
+    }
+
+    .table-container {
+      margin-top: 1.5rem;
+      padding: 1.5rem;
+      background-color: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    }
   </style>
 </head>
-<body>
+<body class="bg-light text-dark">
+  <div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h3 class="mb-0">Monitoring Tiket GAMAS - TIF2 REGIONAL3</h3>
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="darkModeSwitch">
+        <label class="form-check-label" for="darkModeSwitch">Dark Mode</label>
+      </div>
+    </div>
 
-  <div class="container">
-    <h4 class="text-center">Peta Lokasi WITEL (Highlight Area Jawa Barat)</h4>
     <div id="map" class="shadow"></div>
-    <div id="liveStatus">Status: <span class="text-success">Live</span> (Auto-refresh setiap 15 detik)</div>
-  </div>
+    <div id="liveStatus" class="mb-3 text-success fw-semibold">Status: Live (Auto-update setiap 15 detik)</div>
 
-  <div class="container">
-    <div class="d-flex justify-content-end p-2">
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="darkModeToggle">
-          <label class="form-check-label" for="darkModeToggle">Dark Mode</label>
-        </div>
-      </div>      
-    <h2 class="text-center my-3">REPORT GAMAS - TIF2 REGIONAL3</h2>
-    <div class="table-responsive shadow">
-      <table id="dataTable" class="table table-striped table-bordered">
-        <thead>
+    <div class="table-container shadow">
+      <table id="dataTable" class="table table-striped table-bordered w-100">
+        <thead class="table-dark">
           <tr>
             <th>NO</th>
             <th>WITEL</th>
@@ -150,8 +285,8 @@
             <th>Target TTR (JAM)</th>
             <th>Lama Open (JAM)</th>
             <th>Sisa TTR (JAM)</th>
-            <th>Jml Anak Terelasi Open</th>
-            <th>Jml Anak Terelasi Close</th>
+            <th>Jml Anak Open</th>
+            <th>Jml Anak Close</th>
             <th>Jumlah Tiket Relasi</th>
           </tr>
         </thead>
@@ -159,28 +294,44 @@
     </div>
   </div>
 
-  <!-- Scripts -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
-  <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
-  <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <!-- Modal Detail -->
+  <div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg">
+      <div class="modal-content light-mode">
+        <div class="modal-header">
+          <h5 class="modal-title">Detail Tiket</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <table class="table table-bordered">
+            <tbody id="modalContent"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
   <script>
     $(document).ready(function () {
       const map = L.map('map').setView([-6.9147, 107.6098], 8);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: 'Peta © OpenStreetMap contributors'
-      }).addTo(map);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
       const blinkingIcon = L.divIcon({ className: 'blinking-marker' });
       const markersGroup = L.layerGroup().addTo(map);
-
       const witelCoords = {
         "BANDUNG": [-6.9147, 107.6098],
-        "BANDUNGBRT": [-6.9978, 107.4558],
+        "BANDUNGBRT": [-6.8781, 107.5793],
         "TASIKMALAYA": [-7.3274, 108.2208],
         "KARAWANG": [-6.3059, 107.3546],
         "SUKABUMI": [-6.9214, 106.9269],
@@ -188,12 +339,12 @@
       };
 
       const table = $('#dataTable').DataTable({
-        processing: true,
-        serverSide: false,
         ajax: {
-          url: "https://script.google.com/macros/s/AKfycby-6GIfyW9XCxefZa1V91gB5P8XPx7OOdWtI8jU25QmHrYS7pUAdAyCLRSFiRMuKsoeIg/exec",
-          dataSrc: "",
-          cache: true
+            url: 'https://script.google.com/macros/s/AKfycby-6GIfyW9XCxefZa1V91gB5P8XPx7OOdWtI8jU25QmHrYS7pUAdAyCLRSFiRMuKsoeIg/exec',
+            dataSrc: function(json) {
+              // Filter: hanya tampilkan jika kolom NO tidak kosong
+              return json.filter(row => row["NO"] && row["NO"].toString().trim() !== "");
+            }
         },
         columns: [
           { data: "NO" },
@@ -206,61 +357,89 @@
           { data: "TARGET TTR  (JAM)" },
           { data: "LAMA OPEN (JAM)" },
           { data: "SISA TTR (JAM)" },
-          { data: "JML ANAK TERELASI STATUS       \u003C OPEN \u003E" },
-          { data: "JML ANAK TERELASI  STATUS             \u003C CLOSE \u003E" },
+          { data: "JML ANAK TERELASI STATUS       < OPEN >" },
+          { data: "JML ANAK TERELASI  STATUS             < CLOSE >" },
           { data: "JUMLAH TIKET RELASI" }
         ],
         pageLength: 10,
-        deferRender: true,
         ordering: false,
-        autoWidth: false,
+        deferRender: true,
         dom: 'Bfrtip',
-        buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
-        initComplete: function () {
-          table.page(0).draw('page');
+        language: {
+          emptyTable: "Sedang tidak ada kejadian Gamas"
         },
-        rowCallback: function (row, data, index) {
-          const sisaTTR = parseFloat(data["SISA TTR (JAM)"]);
-          if (!isNaN(sisaTTR) && sisaTTR < 0) {
-            $('td:eq(9)', row).addClass("highlight-yellow");
+        buttons: [
+          {
+            extend: 'copyHtml5',
+            text: '<i class="bi bi-clipboard"></i>',
+            titleAttr: 'Copy',
+            className: 'btn btn-sm'
+          },
+          {
+            extend: 'csvHtml5',
+            text: '<i class="bi bi-file-earmark-spreadsheet"></i>',
+            titleAttr: 'Export CSV',
+            className: 'btn btn-sm'
+          },
+          {
+            extend: 'excelHtml5',
+            text: '<i class="bi bi-file-earmark-excel"></i>',
+            titleAttr: 'Export Excel',
+            className: 'btn btn-sm'
+          },
+          {
+            extend: 'pdfHtml5',
+            text: '<i class="bi bi-file-earmark-pdf"></i>',
+            titleAttr: 'Export PDF',
+            className: 'btn btn-sm'
+          },
+          {
+            extend: 'print',
+            text: '<i class="bi bi-printer"></i>',
+            titleAttr: 'Print',
+            className: 'btn btn-sm'
           }
+        ],
+        rowCallback: function (row, data) {
+          const sisa = parseFloat(data["SISA TTR (JAM)"]);
+          if (!isNaN(sisa) && sisa < 0) $('td:eq(9)', row).addClass("highlight-yellow");
 
-          const witelRaw = data["WITEL"];
-          const witel = witelRaw ? witelRaw.toUpperCase().replace(/\s+/g, "") : "";
+          const witel = data["WITEL"]?.toUpperCase().replace(/\s+/g, "");
           if (witelCoords[witel]) {
             const [lat, lng] = witelCoords[witel];
             L.marker([lat, lng], { icon: blinkingIcon })
               .addTo(markersGroup)
-              .bindPopup(`Tiket di ${witelRaw}`);
+              .bindPopup(`Tiket di ${data["WITEL"]}`);
           }
         }
       });
 
-        // Auto-refresh setiap 15 detik + status
-        setInterval(() => {
-            markersGroup.clearLayers();
-            table.ajax.reload(null, false);
-            $("#liveStatus").html("Status: <span class='text-success'>Live</span> (Auto-refresh: " + new Date().toLocaleTimeString() + ")");
-        }, 15000);
-    });
+      $('#dataTable tbody').on('click', 'tr', function () {
+        const data = table.row(this).data();
+        const modalBody = $('#modalContent');
+        modalBody.empty();
+        Object.entries(data).forEach(([key, value]) => {
+          modalBody.append(`<tr><th>${key}</th><td>${value}</td></tr>`);
+        });
+        const modalEl = document.querySelector('#detailModal .modal-content');
+        modalEl.className = 'modal-content ' + (document.body.classList.contains('bg-dark') ? 'dark-mode' : 'light-mode');
+        new bootstrap.Modal('#detailModal').show();
+      });
 
-    // Dark Mode toggle
-    const toggle = document.getElementById('darkModeToggle');
+      // Auto-refresh
+      setInterval(() => {
+        markersGroup.clearLayers();
+        table.ajax.reload(null, false);
+        const nowJakarta = new Date().toLocaleTimeString('id-ID', { timeZone: 'Asia/Jakarta', hour12: false });
+        $("#liveStatus").html("Status: <span class='text-success'>Live</span> (=> " + nowJakarta + " WIB)");
+      }, 15000);
 
-    // Load preferensi dari localStorage
-    if (localStorage.getItem('dark-mode') === 'enabled') {
-    document.body.classList.add('dark-mode');
-    toggle.checked = true;
-    }
-
-    toggle.addEventListener('change', function () {
-        if (this.checked) {
-            document.body.classList.add('dark-mode');
-            localStorage.setItem('dark-mode', 'enabled');
-        } else {
-            document.body.classList.remove('dark-mode');
-            localStorage.setItem('dark-mode', 'disabled');
-        }
+      // Dark mode toggle
+      $('#darkModeSwitch').on('change', function () {
+        const isDark = $(this).is(':checked');
+        $('html').attr('data-bs-theme', isDark ? 'dark' : 'light');
+        $('body').toggleClass('bg-dark text-light', isDark).toggleClass('bg-light text-dark', !isDark);
+      });
     });
   </script>
 </body>
