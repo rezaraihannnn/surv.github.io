@@ -265,10 +265,20 @@
       border-radius: 12px;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
     }
+
+    .container-fluid {
+      padding-left: 50px;
+      padding-right: 50px;
+    }
+
+    .dataTables_filter {
+      margin: 0;
+    }    
+
   </style>
 </head>
 <body class="bg-light text-dark">
-  <div class="container mt-4">
+  <div class="container-fluid mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h3 class="mb-0">Monitoring Tiket GAMAS - TIF2 REGIONAL3</h3>
       <div class="form-check form-switch">
@@ -377,6 +387,24 @@
       `;
     }
 
+    function formatReportedDate(dateString) {
+      if (!dateString) return "";
+      const date = new Date(dateString);
+      if (isNaN(date)) return dateString;
+    
+      const options = {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      };
+    
+      return date.toLocaleString('id-ID', options).replace(',', '');
+    }
+
     $(document).ready(function () {
       const map = L.map('map').setView([-6.9147, 107.6098], 8);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
@@ -400,6 +428,22 @@
               try {
                   const filtered = json.filter(row => row["NO"] && row["NO"].toString().trim() !== "");
                   $("#insightContainer").html(generateInsight(filtered));
+                  
+                  markersGroup.clearLayers();
+                  filtered.forEach(d => {
+                    const witel = d["WITEL"]?.toUpperCase().replace(/\s+/g, "");
+                    if (witelCoords[witel]) {
+                      const [lat, lng] = witelCoords[witel];
+                      L.marker([lat, lng], { icon: blinkingIcon })
+                        .addTo(markersGroup)
+                        .bindPopup(`Tiket di ${d["WITEL"]}`);
+                    }
+          
+                    // Tambahkan flag untuk highlight kuning jika SISA TTR < 24 jam
+                    const jam = parseFloat(d["SISA TTR (JAM)"]);
+                    d._highlight = !isNaN(jam) && jam < 0;
+                  });
+                  
                   return filtered;
                 } catch (err) {
                   console.error("Error saat generate insight:", err);
@@ -414,7 +458,11 @@
           { data: "STO" },
           { data: "No Tiket" },
           { data: "Summary" },
-          { data: "REPORTED DATE" },
+          { data: "REPORTED DATE", 
+            render: function (data) {
+              return formatReportedDate(data);
+            }
+          },
           { data: "SEGMEN" },
           { data: "TARGET TTR  (JAM)" },
           { data: "LAMA OPEN (JAM)" },
@@ -423,10 +471,21 @@
           { data: "JML ANAK TERELASI  STATUS             < CLOSE >" },
           { data: "JUMLAH TIKET RELASI" }
         ],
-        pageLength: 10,
+        createdRow: function(row, data, dataIndex) {
+          if (data._highlight) {
+            const cellIndex = 9; // Sesuaikan index kolom "SISA TTR (JAM)"
+            $("td", row).eq(cellIndex).css({
+              "background-color": "#fff3cd",
+              "color": "#856404"
+            });
+          }
+        },
+        pageLength: 5,
         ordering: false,
         deferRender: true,
-        dom: 'Bfrtip',
+        dom: "<'d-flex justify-content-between align-items-center mb-2'<'dt-buttons'B><'dataTables_filter'f>>" +
+        "<'table-responsive't>" +
+        "<'d-flex justify-content-between align-items-center mt-2'lip>",   
         language: {
           emptyTable: "Sedang tidak ada kejadian Gamas"
         },
